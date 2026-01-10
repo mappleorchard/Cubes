@@ -55,6 +55,7 @@
     if (kc === 50 /* '2' */) return 'up';
     if (kc === 56 /* '8' */) return 'down';
     if (kc === 52 /* '4' */) return 'left';
+    if (kc === 53 /* '4' */) return 'space';
     if (kc === 54 /* '6' */) return 'right';
 
     // Add additional device-specific mappings here if you discover them
