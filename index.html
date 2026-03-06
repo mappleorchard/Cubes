@@ -77,6 +77,9 @@
       height: 100%;
       width: 0;
       background-color: currentColor;
+      /* Add these two lines */
+      transition: width 0.4s ease-out; 
+      will-change: width;
     }
     .loading-text, noscript {
       font-weight: normal;
@@ -282,13 +285,13 @@
       if (vm.setRuntimeOptions) vm.setRuntimeOptions({
         fencing: true,
         miscLimits: true,
-        maxClones: 300,
+        maxClones: 140,
       });
       if (vm.setCompilerOptions) vm.setCompilerOptions({
         enabled: true,
         warpTimer: false
       });
-      if (vm.renderer.setMaxTextureDimension) vm.renderer.setMaxTextureDimension(2048);
+      if (vm.renderer.setMaxTextureDimension) vm.renderer.setMaxTextureDimension(1024);
 
       // enforcePrivacy threat model only makes sense in the editor
       if (vm.runtime.setEnforcePrivacy) vm.runtime.setEnforcePrivacy(false);
@@ -369,22 +372,34 @@
       })();
     </script>
   <script>
-    const run = async () => {
-      const projectData = await getProjectData();
-      await scaffolding.loadProject(projectData);
-      setProgress(1);
-      loadingScreen.hidden = true;
-      if (false) {
-        scaffolding.start();
-      } else {
-        launchScreen.hidden = false;
-        launchScreen.addEventListener('click', () => {
-          launchScreen.hidden = true;
+  const run = async () => {
+        // 1. Download the project data
+        let projectData = await getProjectData();
+        
+        // 2. Wait 100ms to let the browser catch its breath
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // 3. Load the project into the engine
+        await scaffolding.loadProject(projectData);
+        
+        // 4. Manually clear the data buffer to free up RAM
+        projectData = null; 
+        
+        // 5. Finalize UI
+        setProgress(1);
+        loadingScreen.hidden = true;
+        
+        if (false) {
           scaffolding.start();
-        });
-        launchScreen.focus();
-      }
-    };
+        } else {
+          launchScreen.hidden = false;
+          launchScreen.addEventListener('click', () => {
+            launchScreen.hidden = true;
+            scaffolding.start();
+          });
+          launchScreen.focus();
+        }
+      };
     run().catch(handleError);
   </script>
 </body>
